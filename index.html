@@ -3,740 +3,1255 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>برنامج إدارة المنتجات والمبيعات والمخزون والتقارير</title>
+<title>التوصيل الدلفري الشيخ حسام</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-sA+4xJm05XSgo8p+pz828DmW8VTqysMt1+WzyVb/fbc="
+  crossorigin=""
+/>
 <style>
-  /* خطوط وألوان حديثة */
-  @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+  * {
+    box-sizing: border-box;
+    font-family: 'Cairo', sans-serif;
+  }
   body {
-    font-family: 'Cairo', sans-serif;
-    background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
-    margin: 0;
-    padding: 0 15px 40px 15px;
-    color: #333;
-    direction: rtl;
-  }
-  h1,h2,h3 {
-    color: #2c3e50;
-    margin-bottom: 10px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
-  }
-  button, input, select {
-    font-family: 'Cairo', sans-serif;
+    margin: 0; padding: 15px 10px; min-height: 100vh;
+    background: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   header {
-    background: #34495e;
-    padding: 15px 20px;
-    color: #ecf0f1;
+    font-size: 1.8rem; font-weight: 900; padding: 15px 20px; user-select: none;
+    color: #fff8f6;
+    text-shadow: 0 0 12px rgba(255,255,255,0.7);
+    letter-spacing: 0.12em;
+    backdrop-filter: blur(25px);
+    background: rgba(255,255,255,0.12);
+    border-radius: 14px;
+    width: fit-content;
+    margin: 0 auto 20px;
     text-align: center;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
   .container {
-    max-width: 1200px;
-    margin: 20px auto 60px auto;
-    padding: 20px;
-    background: rgba(255,255,255,0.95);
-    border-radius: 12px;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-  }
-  section {
-    margin-bottom: 30px;
-  }
-  label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 700;
-    color: #34495e;
-  }
-  input[type=text], input[type=number], select {
     width: 100%;
-    padding: 10px 14px;
-    margin-bottom: 16px;
-    border-radius: 8px;
-    border: 1px solid #bdc3c7;
-    box-sizing: border-box;
-    font-size: 17px;
-    transition: border-color 0.3s ease;
+    background: rgba(255 255 255 / 0.15);
+    border-radius: 18px;
+    padding: 20px 15px 30px;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 0 25px rgba(255, 99, 71 / 0.8), 0 10px 30px rgba(200, 50, 20 / 0.6);
+    color: #6b2a20;
+    margin-bottom: 70px;
   }
-  input[type=text]:focus, input[type=number]:focus, select:focus {
-    border-color: #2980b9;
-    outline: none;
-    box-shadow: 0 0 8px #2980b9aa;
+  .tabs {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;
+    user-select:none;
   }
-  button {
-    background: #2980b9;
-    border: none;
-    color: white;
-    padding: 14px 30px;
-    border-radius: 10px;
+  .tab {
+    flex: 1 1 100px;
+    background: rgba(255,255,255,0.12);
+    padding: 10px 5px;
+    border-radius: 15px 15px 0 0;
+    font-weight: 700;
     cursor: pointer;
-    font-weight: 700;
-    font-size: 18px;
-    box-shadow: 0 4px 15px rgba(41,128,185,0.4);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    color: #FFCDB2;
+    box-shadow: inset 0 -4px 0 transparent;
+    transition: color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    font-size: 0.95rem;
   }
-  button:hover {
-    background: #1c5980;
-    box-shadow: 0 6px 18px rgba(28,89,128,0.6);
+  .tab.active {
+    background: #FF7B54;
+    color: #2d0700;
+    box-shadow: inset 0 -4px 0 #421e00;
+    font-weight: 900;
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    border-radius:12px;
+  .tab-content {
+    background: rgba(255 255 255 / 0.2);
+    border-radius: 0 15px 15px 15px;
+    padding: 20px 15px;
+    box-shadow: 0 0 30px rgba(255, 115, 90 / 0.8), inset 0 0 12px 2px rgba(255, 140, 92 / 0.45);
+    display: none;
+    color: #350b00de;
+    font-weight: 600;
+  }
+  .tab-content.active { display:block; }
+  h2 {
+    font-weight: 900;
+    font-size: 1.5rem;
+    margin-top: 0;
+    color: #3a0000;
+    text-shadow: 0 0 7px #ffa07aaa, 0 0 20px #ff7f5088;
+    text-align: center;
+  }
+  .menu {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-top: 15px;
+  }
+  .item-card {
+    background: rgba(255 255 255 / 0.1);
+    border-radius: 18px;
+    box-shadow: 0 0 35px #ff5a2b99, inset 0 0 18px #ff7a51aa;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
   }
-  th,td {
-    padding: 14px 12px;
-    border-bottom: 1px solid #ecf0f1;
-    text-align: center;
-    font-size: 15px;
-    color: #2c3e50;
-    background: #fafafa;
+  .item-img {
+    height: 150px; width: 100%; object-fit: cover;
+    user-select: none;
+    filter: drop-shadow(0 0 8px #ff6b3caf);
   }
-  th {
-    background: #2980b9;
-    color: white;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-  }
-  tr:nth-child(even) td {
-    background: #eaf2f8;
-  }
-  .currency {
-    font-weight: bold;
-  }
-  .flex-row {
+  .item-info {
+    padding: 15px;
+    flex-grow: 1;
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    color: #e6d9d5;
+  }
+  .item-info h3 {
+    margin: 0 0 8px;
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-shadow: 0 0 7px rgba(255 115 90 / 0.9);
+  }
+  .price {
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #ff3c11;
+    margin-bottom: 10px;
+    text-shadow: 0 0 6px #ff7a59cc;
+  }
+  .add-to-cart {
+    background-color: #ff5f34;
+    border:none;
+    border-radius: 18px;
+    padding: 10px 0;
+    color: #fff;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 22px #e04e1b;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    width: 100%;
+  }
+  .add-to-cart:hover {
+    background-color: #ff784d;
+    box-shadow: 0 6px 26px #ff8a60;
+  }
+  .cart-section {
+    background: rgba(255 255 255 / 0.15);
+    border-radius: 18px;
+    padding: 20px 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 0px 30px rgba(255, 99, 71, 0.8);
+    color: #6b2a20;
+    font-weight: 700;
+  }
+  .cart-items {
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    border-bottom: 3px solid #ff7a52;
+    padding-bottom: 15px;
+    font-weight: 700;
+  }
+  .cart-item {
+    font-size: 0.95rem;
+    padding: 10px 0;
+    border-top: 1.5px solid #fca08b;
+    display: flex;
     justify-content: space-between;
-  }
-  .flex-col {
-    flex: 1 1 300px;
-  }
-  .report-period {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 15px;
     align-items: center;
+    gap: 8px;
     flex-wrap: wrap;
   }
-  .report-period label {
-    margin-bottom: 0;
-    font-weight: 600;
-    color: #34495e;
+  .cart-item:first-child {
+    border-top: none;
   }
-  footer {
-    text-align: center;
-    padding: 15px 10px;
-    font-size: 14px;
-    color: #777;
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-  /* Scroll horizontal on small screens for tables */
-  .table-wrapper {
-    overflow-x: auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  /* Scroll bar style for WebKit */
-  .table-wrapper::-webkit-scrollbar {
-    height: 8px;
-  }
-  .table-wrapper::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-    border-radius: 12px;
-  }
-  .table-wrapper::-webkit-scrollbar-thumb {
-    background: #2980b9; 
-    border-radius: 12px;
-  }
-  /* Responsive */
-  @media(max-width:720px){
-    h1,h2,h3 {
-      font-size: 1.4rem;
-    }
-    button {
-      font-size: 16px;
-      padding: 12px 20px;
-    }
-  }
-  /* Delete buttons style */
-  .delete-btn {
-    background: #e74c3c;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    padding: 6px 10px;
+  .quantity-control button {
+    background-color: #ff5f34;
+    border: none;
+    color: white;
+    font-weight: 900;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1.1rem;
+    line-height: 1rem;
     transition: background-color 0.3s ease;
   }
-  .delete-btn:hover {
-    background: #c0392b;
+  .quantity-control button:hover {
+    background-color: #ff784d;
+  }
+  .cart-total {
+    margin: 15px 0 0;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #d42f1a;
+    text-align: right;
+    user-select: text;
+    text-shadow: 0 0 10px #ffc4bbcc;
+  }
+  .checkout-btn {
+    width: 100%;
+    background-color: #27ae60;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 1.1rem;
+    color: white;
+    cursor: pointer;
+    font-weight: 900;
+    box-shadow: 0 6px 22px rgb(39 174 96 / 0.8);
+    border: none;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+  }
+  .checkout-btn:hover {
+    background-color: #3cb371;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  label {
+    font-weight: 900;
+    color: #9f3f19;
+    margin-bottom: 5px;
+    user-select: text;
+    text-shadow: 0 0 10px #f2956baa;
+    display: block;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 18px;
+    border: 2px solid #ff7a52cc;
+    font-size: 1rem;
+    font-weight: 700;
+    background: rgba(255 123 90 / 0.15);
+    color: #521f12;
+    box-shadow: inset 0 2px 10px rgba(238 138 88 / 0.5);
+    transition: border-color 0.3s ease;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: #ff3c11;
+    outline: none;
+  }
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  .map-container {
+    height: 250px;
+    margin-top: 15px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 44px rgba(206 75 39 / 0.35);
+    border: 2px solid #ff845cbb;
+    position: relative;
+  }
+  #map, #leafletMap, #trackerMap {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    position: relative;
+    z-index: 1;
+  }
+  #leafletMap, #trackerMap {
+    display: none;
+  }
+  #get-location, #toggle-map-type, #cancel-order {
+    background-color: #db4916;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 900;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 6px 20px #b23a0cbb;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  #get-location:hover, #toggle-map-type:hover, #cancel-order:hover {
+    background-color: #ca3f0f;
+  }
+  #toggle-map-type {
+    background-color: #9e2f0b;
+  }
+  #cancel-order {
+    background-color: #6c2007;
+    display: none;
+  }
+  .share-btn, .call-btn, .email-btn {
+    background-color: #9dd864;
+    color: #233a05;
+    border: none;
+    border-radius: 18px;
+    font-weight: 900;
+    padding: 14px 20px;
+    font-size: 1rem;
+    margin-top: 15px;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 7px 22px rgba(123, 212, 111, 0.8);
+    transition: background-color 0.3s ease;
+  }
+  .share-btn:hover, .call-btn:hover, .email-btn:hover {
+    background-color: #b8e18a;
+  }
+  .order-status {
+    margin-top: 20px;
+    padding: 15px 20px;
+    background-color: rgba(171, 237, 132, 0.5);
+    border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(34, 90, 0, 0.55);
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #284000;
+    text-align: center;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    user-select: none;
+    text-shadow: 0 0 12px #bcf15bcc;
+  }
+  .order-status .dots span {
+    animation: blink 1.3s infinite;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: #579000;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  #driver-info {
+    background: rgba(208, 255, 157, 0.85);
+    padding: 15px;
+    border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(34, 90, 0, 0.55);
+    margin-top: 20px;
+    color: #2f4d00;
+    font-size: 1rem;
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+  }
+  #driver-info.active {
+    display: flex;
+  }
+  #driver-info img {
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 3px solid #7db03a;
+    margin: 0 auto;
+  }
+  #call-driver-btn {
+    background-color: #73a915;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 22px #65970cbb;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  #call-driver-btn:hover {
+    background-color: #87c429;
+  }
+  #messenger-btn {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    background-color: #4a7e0c;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 6px 18px #4a7e0cbb;
+    border: none;
+    cursor: pointer;
+    z-index: 1050;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  #messenger-btn:hover {
+    background-color: #5b9a14;
+  }
+  #messenger-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: white;
+  }
+  /* Modal overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+  }
+  .modal-overlay.active {
+    display: flex;
+  }
+  /* Modal content */
+  .modal {
+    background: #fff;
+    color: #350b00;
+    padding: 20px;
+    border-radius: 18px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 40px rgba(255, 115, 90, 0.8);
+    font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+  }
+  .modal h2 {
+    text-align: center;
+    color: #b44317;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 900;
+    font-size: 1.6rem;
+    text-shadow: 0 0 10px #ff6f3aaa;
+  }
+  .modal .form-group {
+    margin-bottom: 14px;
+  }
+  .modal label {
+    display: block;
+    margin-bottom: 6px;
+    user-select: text;
+    color: #9f3f19;
+    font-weight: 900;
+    text-shadow: 0 0 8px #f2956baa;
+  }
+  .modal input[type="text"], .modal input[type="number"], .modal input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 2px solid #ff7a52cc;
+    font-size: 1rem;
+    font-weight: 700;
+    background: rgba(255 123 90 / 0.1);
+    color: #521f12;
+    box-shadow: inset 0 2px 10px rgba(238 138 88 / 0.35);
+    transition: border-color 0.3s ease;
+  }
+  .modal input[type="text"]:focus, .modal input[type="number"]:focus, .modal input[type="file"]:focus {
+    border-color: #ff3c11;
+    outline: none;
+  }
+  .modal img.preview {
+    display: block;
+    margin: 10px auto 0;
+    max-width: 120px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #ff5a2bbb;
+  }
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    gap: 10px;
+  }
+  .modal-buttons button {
+    flex-grow: 1;
+    padding: 10px 0;
+    border: none;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  .modal-buttons button.save-btn {
+    background-color: #ff5f34;
+    color: white;
+    box-shadow: 0 6px 22px #e04e1b;
+  }
+  .modal-buttons button.save-btn:hover {
+    background-color: #ff784d;
+  }
+  .modal-buttons button.cancel-btn {
+    background-color: #db4916;
+    color: white;
+    box-shadow: 0 6px 20px #b23a0cbb;
+  }
+  .modal-buttons button.cancel-btn:hover {
+    background-color: #ca3f0f;
+  }
+  /* Progress tracker styles */
+  .progress-tracker {
+    margin-top: 20px;
+    background: rgba(255 255 255 / 0.3);
+    border-radius: 18px;
+    padding: 15px 20px;
+    box-shadow: 0 0 30px rgba(255, 115, 90, 0.6);
+    color: #350b00;
+    font-weight: 900;
+    user-select: none;
+  }
+  .progress-steps {
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+  }
+  .progress-step {
+    flex-grow: 1;
+    text-align: center;
+    position: relative;
+  }
+  .progress-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    right: 0;
+    width: 100%;
+    height: 4px;
+    background: #cfa68f66;
+    z-index: 0;
+  }
+  .progress-step.active:not(:last-child)::after {
+    background: #ff5f34;
+  }
+  .progress-step .circle {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    border-radius: 50%;
+    background: #cfa68f66;
+    color: #fff;
+    z-index: 1;
+    position: relative;
+    margin-bottom: 6px;
+    font-size: 1.1rem;
+  }
+  .progress-step.active .circle {
+    background: #ff5f34;
+    box-shadow: 0 0 12px #ff6a37cc;
+  }
+  .progress-step .label {
+    font-size: 0.9rem;
+    color: #350b004d;
+    white-space: nowrap;
+  }
+  .progress-step.active .label {
+    color: #4a1400;
+    font-weight: 900;
+    text-shadow: 0 0 8px #ff8a60cc;
+  }
+  /* Tracker map container and styles */
+  #trackerMap {
+    height: 300px !important;
+    margin-top: 15px;
+    border-radius: 18px;
+    box-shadow: 0 10px 44px rgba(206 75 39 / 0.35);
+    border: 2px solid #ff845cbb;
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
 </head>
 <body>
-<header>برنامج إدارة المنتجات والمبيعات والمخزون والتقارير</header>
-<div class="container">
+<header>التوصيل الدلفري الشيخ حسام</header>
 
-  <section id="products-section">
-    <h2>إدارة المنتجات</h2>
-    <div class="flex-row">
-      <div class="flex-col">
-        <label for="product-name">اسم المنتج</label>
-        <input type="text" id="product-name" placeholder="أدخل اسم المنتج" autocomplete="off" />
-      </div>
-      <div class="flex-col">
-        <label for="product-price">سعر المنتج (دج)</label>
-        <input type="number" id="product-price" placeholder="أدخل سعر المنتج" min="0" step="0.01" />
-      </div>
-      <div class="flex-col" style="flex-grow:0; display:flex; align-items:flex-end;">
-        <button onclick="addProduct()">إضافة منتج</button>
-      </div>
-    </div>
-    <div class="table-wrapper">
-      <table id="products-table" aria-label="قائمة المنتجات">
-        <thead>
-          <tr>
-            <th>الرقم</th>
-            <th>اسم المنتج</th>
-            <th>سعر الشراء (دج)</th>
-            <th>سعر البيع (دج)</th>
-            <th>الكمية المخزنية</th>
-            <th>القرض (دج)</th>
-            <th>الإجراء</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
+<div class="container" role="main">
 
-  <section id="sales-section">
-    <h2>تسجيل المبيعات</h2>
-    <div class="flex-row" style="align-items:flex-end;">
-      <div class="flex-col">
-        <label for="sale-product">اختر المنتج</label>
-        <select id="sale-product" aria-label="اختيار منتج للبيع">
-          <option value="" disabled selected>اختر المنتج...</option>
-        </select>
-      </div>
-      <div class="flex-col">
-        <label for="sale-quantity">الكمية</label>
-        <input type="number" id="sale-quantity" min="1" step="1" value="1" aria-label="كمية المنتج" />
-      </div>
-      <div class="flex-col" style="flex-grow:0;">
-        <button onclick="addSale()">تسجيل بيع</button>
-      </div>
-    </div>
-    <div class="table-wrapper">
-      <table id="sales-table" aria-label="قائمة المبيعات">
-        <thead>
-          <tr>
-            <th>الرقم</th>
-            <th>اسم المنتج</th>
-            <th>الكمية</th>
-            <th>سعر الوحدة (دج)</th>
-            <th>الإجمالي (دج)</th>
-            <th>التاريخ</th>
-            <th>الإجراء</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
+<nav class="tabs" role="tablist">
+  <div class="tab active" data-tab="menu" role="tab" tabindex="0" aria-selected="true" aria-controls="menu" id="tab-menu">قائمة الطعام</div>
+  <div class="tab" data-tab="desserts" role="tab" tabindex="-1" aria-selected="false" aria-controls="desserts" id="tab-desserts">التحليات</div>
+  <div class="tab" data-tab="cart" role="tab" tabindex="-1" aria-selected="false" aria-controls="cart" id="tab-cart">سلة التسوق</div>
+  <div class="tab" data-tab="checkout" role="tab" tabindex="-1" aria-selected="false" aria-controls="checkout" id="tab-checkout">إتمام الطلب</div>
+  <div class="tab" data-tab="order-progress" role="tab" tabindex="-1" aria-selected="false" aria-controls="order-progress" id="tab-order-progress">تتبع الطلبية</div>
+</nav>
 
-  <section id="stock-section">
-    <h2>المخزون الحالي</h2>
-    <div class="flex-row" style="gap:15px; margin-bottom: 15px;">
-      <div class="flex-col" style="max-width: 250px;">
-        <label for="stock-product">اختر المنتج</label>
-        <select id="stock-product" aria-label="اختيار منتج لتحديث المخزون">
-          <option value="" disabled selected>اختر المنتج...</option>
-        </select>
-      </div>
-      <div class="flex-col">
-        <label for="stock-quantity">إضافة/تعديل الكمية في المخزون</label>
-        <input type="number" id="stock-quantity" min="0" step="1" value="0" />
-      </div>
-      <div class="flex-col">
-        <label for="stock-purchase-price">سعر الشراء (دج)</label>
-        <input type="number" id="stock-purchase-price" min="0" step="0.01" value="0" />
-      </div>
-      <div class="flex-col" style="flex-grow:0; display: flex; align-items: flex-end;">
-        <button onclick="updateStock()">تحديث المخزون</button>
-      </div>
-    </div>
+<section id="menu" class="tab-content active" role="tabpanel" tabindex="0" aria-labelledby="tab-menu">
+  <h2>اختر ما يعجبك من البيتزا والمزيد</h2>
+  <button id="add-product-btn" aria-label="إضافة منتج جديد" style="margin: 12px auto; display: block; font-weight: 900; font-size: 1rem; background-color: #ff6a40; color: white; border: none; padding: 10px 20px; border-radius:18px; cursor: pointer; box-shadow: 0 6px 22px #e04e1b;">إضافة منتج جديد</button>
+  <div class="menu" id="menu-items"></div>
+</section>
 
-    <div class="table-wrapper">
-      <table id="stock-table" aria-label="جدول المخزون">
-        <thead>
-          <tr>
-            <th>اسم المنتج</th>
-            <th>الكمية المتوفرة</th>
-            <th>سعر الشراء (دج)</th>
-            <th>القرض (دج)</th>
-            <th>الإجراء</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
+<section id="desserts" class="tab-content" role="tabpanel" tabindex="0" aria-labelledby="tab-desserts">
+  <h2>التحليات التقليدية</h2>
+  <div class="menu" id="desserts-items"></div>
+</section>
 
-  <section id="report-section">
-    <h2>التقارير</h2>
-    <div class="report-period">
-      <label for="report-filter">اختر فترة التقرير:</label>
-      <select id="report-filter" aria-label="اختيار فترة التقرير">
-        <option value="اليوم">اليوم</option>
-        <option value="الأسبوع">الأسبوع</option>
-        <option value="الشهر">الشهر</option>
-        <option value="كل_الأوقات">كل الأوقات</option>
+<section id="cart" class="tab-content" role="tabpanel" tabindex="0" aria-labelledby="tab-cart">
+  <h2>سلة التسوق</h2>
+  <div class="cart-section">
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-total">
+      المجموع: <span id="total-price">0</span> دينار جزائري
+    </div>
+    <button class="checkout-btn" id="proceed-to-checkout" aria-label="الانتقال إلى إتمام الطلب">إتمام الطلب</button>
+  </div>
+</section>
+
+<section id="checkout" class="tab-content" role="tabpanel" tabindex="0" aria-labelledby="tab-checkout">
+  <h2>إتمام الطلب</h2>
+  <form id="order-form">
+    <div class="form-group">
+      <label for="name">الاسم:</label>
+      <input type="text" id="name" name="name" required autocomplete="name" />
+    </div>
+    <div class="form-group">
+      <label for="phone">رقم الهاتف (بدء ب213):</label>
+      <input type="tel" id="phone" name="phone" required autocomplete="tel" pattern="^(213)?\d{9}$" title="يرجى إدخال رقم هاتف صحيح مع أو بدون 213 وبطول 9 أرقام" placeholder="مثال: 213531234567" />
+    </div>
+    <div class="form-group">
+      <label for="address">العنوان:</label>
+      <textarea id="address" name="address" rows="3" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="map-type" style="font-weight:900;">نوع الخريطة:</label>
+      <select id="map-type" aria-label="اختيار نوع الخريطة" style="border-radius:18px; padding:8px 12px; font-weight:700; width: 100%; margin-bottom: 12px;">
+        <option value="google">خريطة جوجل</option>
+        <option value="osm">خريطة مفتوحة (OpenStreetMap)</option>
+        <option value="opentopo">خريطة تضاريس (OpenTopoMap)</option>
       </select>
-      <button onclick="generateReport()">عرض التقرير</button>
-      <button onclick="clearAllData()" style="background:#c0392b;">محو السجل</button>
+      <div class="map-container" aria-label="خريطة تفاعلية لتحديد موقع المستخدم والمطعم">
+        <div id="map" aria-label="خريطة جوجل"></div>
+        <div id="leafletMap" aria-label="خريطة Leaflet"></div>
+      </div>
+      <button id="get-location" type="button" aria-label="تحديد موقعك الحالي">تحديد موقعي الحالي</button>
     </div>
-    <div id="report-summary" style="margin-top:15px;"></div>
-    <div class="table-wrapper" style="margin-top:15px;">
-      <table id="report-table" aria-label="جدول تقارير المبيعات">
-        <thead>
-          <tr>
-            <th>الرقم</th>
-            <th>اسم المنتج</th>
-            <th>الكمية المباعة</th>
-            <th>إجمالي المبيعات (دج)</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+    <button class="checkout-btn" id="place-order" type="submit" aria-label="تأكيد الطلب">تأكيد الطلب</button>
+  </form>
+
+  <button class="share-btn" id="share-order" aria-label="مشاركة الطلب عبر واتساب">مشاركة الطلب عبر واتساب</button>
+  <button class="call-btn" id="call-order" aria-label="طلب عبر الهاتف">طلب عبر الهاتف</button>
+  <button class="email-btn" id="email-order" aria-label="طلب عبر البريد الإلكتروني">طلب عبر البريد الإلكتروني</button>
+
+  <div class="order-status" id="order-status" aria-live="polite" style="display:none;">
+    <span>تتبع حالة الطلبية</span>
+    <span class="dots"><span>.</span><span>.</span><span>.</span></span>
+  </div>
+
+  <div id="driver-info" aria-live="polite" style="display:none;">
+    <img src="" alt="صورة السائق" id="driver-avatar" />
+    <div>
+      <p>اسم السائق: <strong id="driver-name"></strong></p>
+      <p>رقم الهاتف: <strong id="driver-phone"></strong></p>
+      <button id="call-driver-btn" aria-label="الاتصال بالسائق">اتصل بالسائق</button>
     </div>
-    <div style="margin-top:15px; display:flex; flex-wrap:wrap; gap:12px;">
-      <button onclick="exportReportToPDF()">تصدير التقرير إلى PDF</button>
-      <button onclick="exportReportToXLS()">تصدير التقرير إلى XLS</button>
-      <button onclick="sendReportByEmail()">إرسال التقرير عبر البريد الإلكتروني</button>
-    </div>
-  </section>
+  </div>
+</section>
+
+<section id="order-progress" class="tab-content" role="tabpanel" tabindex="0" aria-labelledby="tab-order-progress">
+  <h2>تتبع الطلبية</h2>
+  <div class="progress-tracker" aria-live="polite" aria-atomic="true">
+    <ul class="progress-steps" role="list">
+      <li class="progress-step" id="step-prepared" aria-current="step">
+        <span class="circle" aria-hidden="true">1</span>
+        <span class="label">تم تجهيز الطلب</span>
+      </li>
+      <li class="progress-step" id="step-driver-pickup">
+        <span class="circle" aria-hidden="true">2</span>
+        <span class="label">استلام السائق</span>
+      </li>
+      <li class="progress-step" id="step-on-way">
+        <span class="circle" aria-hidden="true">3</span>
+        <span class="label">في الطريق إليك</span>
+      </li>
+      <li class="progress-step" id="step-delivered">
+        <span class="circle" aria-hidden="true">4</span>
+        <span class="label">تم التسليم</span>
+      </li>
+    </ul>
+    <div id="progress-message" style="text-align:center; font-size:1.1rem; font-weight:700; margin-top:10px;color:#4a1400;"></div>
+  </div>
+  <div class="map-container" style="height: 320px; margin-top: 20px;">
+    <div id="trackerMap" aria-label="خريطة تتبع الطلب"></div>
+  </div>
+</section>
+
 </div>
 
-<footer>© 2024 برنامج إدارة المبيعات والمخزون</footer>
+<button id="messenger-btn" aria-label="اتصل بنا عبر ماسنجر" title="اتصل بنا عبر ماسنجر">
+<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2C6.48 2 2 6.03 2 11.25c0 3.2 2.16 5.86 5.22 6.9v4.99l4.6-2.48c.84.16 1.76.25 2.78.25 5.52 0 10-4.03 10-9.25S17.52 2 12 2zm1.56 11.13l-3.89-3.56-5.33 3.56 7.52 2.4 3.9 3.56 1.92-5.4-4.12-1.56z"/></svg>
+</button>
 
+<!-- Add product modal -->
+<div class="modal-overlay" id="add-product-modal" role="dialog" aria-modal="true" aria-labelledby="add-product-title" aria-describedby="add-product-desc">
+  <div class="modal">
+    <h2 id="add-product-title">إضافة منتج جديد</h2>
+    <form id="add-product-form">
+      <div class="form-group">
+        <label for="product-name">اسم المنتج:</label>
+        <input type="text" id="product-name" name="product-name" required />
+      </div>
+      <div class="form-group">
+        <label for="product-image">صورة المنتج:</label>
+        <input type="file" accept="image/*" id="product-image" name="product-image" required />
+        <img src="" alt="معاينة الصورة" class="preview" id="product-image-preview" style="display:none;" />
+      </div>
+      <div class="form-group">
+        <label for="product-price">ثمن المنتج (دج):</label>
+        <input type="number" id="product-price" name="product-price" min="1" required />
+      </div>
+      <div class="modal-buttons">
+        <button type="submit" class="save-btn" aria-label="حفظ المنتج">حفظ المنتج</button>
+        <button type="button" class="cancel-btn" id="cancel-add-product" aria-label="إلغاء الإضافة">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+integrity="sha256-sA+4xJm05XSgo8p+pz828DmW8VTqysMt1+WzyVb/fbc=" crossorigin=""></script>
 <script>
-  const STORAGE_PRODUCTS = 'app_products';
-  const STORAGE_SALES = 'app_sales';
+  // بيانات المنتجات وغيرها
+  let mainProducts = [
+    { id: 1, name: "بيتزا بيبروني", description: "بيبروني، جبنة موزاريلا، صلصة طماطم", price: 35, image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80" },
+    { id: 2, name: "بيتزا خضار", description: "فلفل، بصل، طماطم، زيتون، جبنة موزاريلا", price: 30, image: "https://images.unsplash.com/photo-1601924582971-c503489e5c95?auto=format&fit=crop&w=600&q=80" },
+    { id: 3, name: "بيتزا دجاج باربيكيو", description: "دجاج مشوي، صلصة باربيكيو، جبنة موزاريلا", price: 40, image: "https://images.unsplash.com/photo-1543332164-5735a257a394?auto=format&fit=crop&w=600&q=80" },
+    { id: 4, name: "بيتزا مارجريتا", description: "جبنة موزاريلا، صلصة طماطم، ريحان طازج", price: 25, image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80" }
+  ];
+  let dessertProducts = [
+    { id: 101, name: "بقلاوة", description: "قطع من البقلاوة المحشوة بالمكسرات ومغمورة بالعسل.", price: 20, image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=400&q=80" },
+    { id: 102, name: "كنافة", description: "كنافة شرقية طازجة مع الجبن أو القشطة.", price: 25, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=400&q=80" },
+    { id: 103, name: "مهلبية", description: "مهلبية عربية كلاسيكية مع رشة قرفة وقطع فواكه.", price: 15, image: "https://images.unsplash.com/photo-1505253210343-60c3a9d560ec?auto=format&fit=crop&w=400&q=80" }
+  ];
+  let cart = [];
+  let userLocation = null;
+  let restaurantLocation = { lat: 36.75, lng: 3.06 };
+  let driverInfo = {
+    name: "علي محمد",
+    phone: "0775210534",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+  };
 
-  // فورمات التاريخ
-  function formatDate(dateObj) {
-    let d = dateObj.getDate().toString().padStart(2, '0');
-    let m = (dateObj.getMonth() +1).toString().padStart(2, '0');
-    let y = dateObj.getFullYear();
-    let hh = dateObj.getHours().toString().padStart(2, '0');
-    let mm = dateObj.getMinutes().toString().padStart(2, '0');
-    return `${d}/${m}/${y} ${hh}:${mm}`;
+  // العناصر
+  const menuContainer = document.getElementById("menu-items");
+  const dessertsContainer = document.getElementById("desserts-items");
+  const cartContainer = document.getElementById("cart-items");
+  const cartCount = document.getElementById("total-price");
+  const orderStatus = document.getElementById("order-status");
+  const driverInfoSection = document.getElementById("driver-info");
+  const driverAvatar = document.getElementById("driver-avatar");
+  const driverName = document.getElementById("driver-name");
+  const driverPhone = document.getElementById("driver-phone");
+  const callDriverBtn = document.getElementById("call-driver-btn");
+
+  const addProductBtn = document.getElementById("add-product-btn");
+  const addProductModal = document.getElementById("add-product-modal");
+  const addProductForm = document.getElementById("add-product-form");
+  const productImageInput = document.getElementById("product-image");
+  const productImagePreview = document.getElementById("product-image-preview");
+  const cancelAddProductBtn = document.getElementById("cancel-add-product");
+
+  const googleMapDiv = document.getElementById("map");
+  const leafletMapDiv = document.getElementById("leafletMap");
+  const mapTypeSelector = document.getElementById("map-type");
+  const trackerMapDiv = document.getElementById("trackerMap");
+
+  // تقدم الطلبة
+  const orderProgressTab = document.getElementById("tab-order-progress");
+  const orderProgressSection = document.getElementById("order-progress");
+  const progressSteps = {
+    prepared: document.getElementById("step-prepared"),
+    driverPickup: document.getElementById("step-driver-pickup"),
+    onWay: document.getElementById("step-on-way"),
+    delivered: document.getElementById("step-delivered")
+  };
+  const progressMessage = document.getElementById("progress-message");
+
+  // خرائط
+  let googleMap = null, googleRestaurantMarker = null, googleUserMarker = null;
+  let leafletMap = null, leafletRestaurantMarker = null, leafletUserMarker = null;
+  let trackerMap = null, trackerRestaurantMarker = null, trackerDriverMarker = null, trackerUserMarker = null;
+
+  // مستخدم (المشتري) وسائق - بيانات محاكاة لمتابعة الطلب
+  let driverCoords = { lat: 36.75, lng: 3.06 }; // يبدأ مع المطعم
+  let driverMoving = false;
+  let orderStatusState = "prepared"; // الحالات: prepared, driverPickup, onWay, delivered
+
+  // إنشاء بطاقة منتج
+  function createProductHTML(product){
+    const div = document.createElement("div");
+    div.classList.add("item-card");
+    div.setAttribute("tabindex", "0");
+    div.dataset.id = product.id;
+    div.innerHTML = `
+      <img src="${product.image}" alt="صورة ${product.name}" class="item-img" />
+      <div class="item-info">
+        <h3>${product.name}</h3>
+        <p>${product.description || ''}</p>
+        <div class="price">${product.price} دينار جزائري</div>
+        <button class="add-to-cart">إضافة إلى السلة</button>
+      </div>
+    `;
+    div.querySelector(".add-to-cart").addEventListener("click", () => {
+      addToCart(product.id);
+    });
+    return div;
   }
 
-  // تحميل وحفظ
-  function loadProducts() {
-    let prods = localStorage.getItem(STORAGE_PRODUCTS);
-    return prods ? JSON.parse(prods) : [];
+  // عرض القوائم
+  function renderMenu(){
+    menuContainer.innerHTML = "";
+    mainProducts.forEach(p => menuContainer.appendChild(createProductHTML(p)));
   }
-  function saveProducts(products) {
-    localStorage.setItem(STORAGE_PRODUCTS, JSON.stringify(products));
+  function renderDesserts(){
+    dessertsContainer.innerHTML = "";
+    dessertProducts.forEach(p => dessertsContainer.appendChild(createProductHTML(p)));
   }
-  function loadSales() {
-    let sales = localStorage.getItem(STORAGE_SALES);
-    return sales ? JSON.parse(sales) : [];
+  // إضافة للسلة
+  function addToCart(id){
+    let product = mainProducts.find(p => p.id === id) || dessertProducts.find(p => p.id === id);
+    if(!product) return;
+    let existing = cart.find(c => c.id === id);
+    if(existing) existing.quantity++;
+    else cart.push({...product, quantity:1});
+    renderCart();
+    alert(`تم إضافة "${product.name}" إلى السلة!`);
   }
-  function saveSales(sales) {
-    localStorage.setItem(STORAGE_SALES, JSON.stringify(sales));
-  }
-
-  // تحديث الواجهة وإدارة المنتجات والمخزون
-  function refreshProductsUI() {
-    const products = loadProducts();
-    const tbody = document.querySelector('#products-table tbody');
-    tbody.innerHTML = '';
-    const saleSelect = document.getElementById('sale-product');
-    const stockSelect = document.getElementById('stock-product');
-    saleSelect.innerHTML = '<option value="" disabled selected>اختر المنتج...</option>';
-    stockSelect.innerHTML = '<option value="" disabled selected>اختر المنتج...</option>';
-
-    products.forEach((p, i) => {
-      const row = tbody.insertRow();
-      row.insertCell(0).innerText = i + 1;
-      row.insertCell(1).innerText = p.name;
-      row.insertCell(2).innerText = Number(p.purchasePrice).toLocaleString('ar-DZ', {minimumFractionDigits:2}) + ' دج';
-      row.insertCell(3).innerText = Number(p.salePrice).toLocaleString('ar-DZ', {minimumFractionDigits:2}) + ' دج';
-      row.insertCell(4).innerText = p.stockQuantity || 0;
-      row.insertCell(5).innerText = Number(p.credit || 0).toLocaleString('ar-DZ', {minimumFractionDigits:2}) + ' دج';
-
-      const removeCell = row.insertCell(6);
-      let btnRemove = document.createElement('button');
-      btnRemove.className = 'delete-btn';
-      btnRemove.textContent = 'حذف';
-      btnRemove.title = 'حذف المنتج';
-      btnRemove.onclick = () => {
-        if(confirm(`هل تريد حذف المنتج "${p.name}"؟ سيتم حذف كل المبيعات المرتبطة.`)) {
-          deleteProduct(i);
+  // عرض السلة
+  function renderCart(){
+    cartContainer.innerHTML = "";
+    if(cart.length === 0){
+      cartContainer.innerHTML = "<p style='text-align:center;color:#fff;'>السلة فارغة</p>";
+      updateCartCount();
+      return;
+    }
+    cart.forEach(item =>{
+      const div = document.createElement("div");
+      div.classList.add("cart-item");
+      div.innerHTML = `
+        <div>${item.name}</div>
+        <div class="quantity-control" aria-label="كمية ${item.name}">
+          <button aria-label="نقص كمية ${item.name}" data-id="${item.id}" data-action="decrease" type="button">−</button>
+          <span>${item.quantity}</span>
+          <button aria-label="زيادة كمية ${item.name}" data-id="${item.id}" data-action="increase" type="button">+</button>
+        </div>
+        <div>${(item.price * item.quantity).toLocaleString()} دج</div>
+      `;
+      cartContainer.appendChild(div);
+    });
+    updateCartCount();
+    cartContainer.querySelectorAll('button').forEach(btn => {
+      btn.onclick = (e) => {
+        const id = parseInt(btn.dataset.id);
+        const action = btn.dataset.action;
+        if(action === "increase"){
+          let item = cart.find(c => c.id === id);
+          if(item){ item.quantity++; renderCart(); }
+        } else if(action === "decrease"){
+          let item = cart.find(c => c.id === id);
+          if(item){
+            item.quantity--;
+            if(item.quantity <= 0) {
+              cart = cart.filter(c => c.id !== id);
+            }
+            renderCart();
+          }
         }
       };
-      removeCell.appendChild(btnRemove);
-
-      let optSale = document.createElement('option');
-      optSale.value = i;
-      optSale.textContent = `${p.name} - ${Number(p.salePrice).toLocaleString('ar-DZ', {minimumFractionDigits:2})} دج`;
-      saleSelect.appendChild(optSale);
-
-      let optStock = document.createElement('option');
-      optStock.value = i;
-      optStock.textContent = p.name;
-      stockSelect.appendChild(optStock);
+    });
+  }
+  function updateCartCount(){
+    const total = cart.reduce((acc, cur) => acc + (cur.price * cur.quantity), 0);
+    cartCount.textContent = total.toLocaleString();
+  }
+  function setupTabs(){
+    const tabs = document.querySelectorAll(".tab");
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => {t.classList.remove("active"); t.setAttribute("aria-selected", "false"); t.tabIndex = -1;});
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+        tab.tabIndex = 0;
+        let target = tab.dataset.tab;
+        document.querySelectorAll(".tab-content").forEach(tc => {
+          if(tc.id === target) tc.classList.add("active");
+          else tc.classList.remove("active");
+        });
+      });
     });
   }
 
-  // تحديث جدول المبيعات
-  function refreshSalesUI() {
-    const sales = loadSales();
-    const products = loadProducts();
-    const tbody = document.querySelector('#sales-table tbody');
-    tbody.innerHTML = '';
-    sales.forEach((sale, i) => {
-      const product = products[sale.productIndex];
-      if(!product) return;
-      const row = tbody.insertRow();
-      row.insertCell(0).innerText = i + 1;
-      row.insertCell(1).innerText = product.name;
-      row.insertCell(2).innerText = sale.quantity;
-      row.insertCell(3).innerText = Number(product.salePrice).toLocaleString('ar-DZ', {minimumFractionDigits:2}) + ' دج';
-      row.insertCell(4).innerText = (product.salePrice * sale.quantity).toLocaleString('ar-DZ', {minimumFractionDigits:2}) + ' دج';
-      row.insertCell(5).innerText = formatDate(new Date(sale.date));
-      const removeCell = row.insertCell(6);
-      let btnRemove = document.createElement('button');
-      btnRemove.className = 'delete-btn';
-      btnRemove.textContent = 'حذف';
-      btnRemove.title = 'حذف المبيعة';
-      btnRemove.onclick = () => {
-        if(confirm('هل تريد حذف هذه المبيعة؟')) {
-          deleteSale(i);
-        }
-      };
-      removeCell.appendChild(btnRemove);
+  // --- خرائط ---
+
+  // جوجل ماب
+  function initGoogleMap(){
+    googleMap = new google.maps.Map(googleMapDiv, {
+      center: restaurantLocation,
+      zoom: 14
     });
-  }
-
-  // تحديث جدول المخزون
-  function refreshStockUI() {
-    const products = loadProducts();
-    const tbody = document.querySelector('#stock-table tbody');
-    tbody.innerHTML = '';
-    products.forEach((p) => {
-      const row = tbody.insertRow();
-      row.insertCell(0).innerText = p.name;
-      row.insertCell(1).innerText = p.stockQuantity || 0;
-      row.insertCell(2).innerText = Number(p.purchasePrice || 0).toLocaleString('ar-DZ', {minimumFractionDigits:2}) + ' دج';
-      row.insertCell(3).innerText = Number(p.credit || 0).toLocaleString('ar-DZ', {minimumFractionDigits:2}) + ' دج';
-      const removeCell = row.insertCell(4);
-      removeCell.textContent = '-'; // no action here, just placeholder
+    googleRestaurantMarker = new google.maps.Marker({
+      position: restaurantLocation,
+      map: googleMap,
+      title: "موقع المطعم"
     });
-  }
-
-  // إضافة منتج جديد مع حقول المخزون والقرض
-  function addProduct() {
-    const name = document.getElementById('product-name').value.trim();
-    const salePrice = parseFloat(document.getElementById('product-price').value);
-    const purchasePrice = parseFloat(prompt("أدخل سعر الشراء للمنتج (دج):", "0"));
-    const stockQuantity = parseInt(prompt("أدخل كمية المخزون للمنتج:", "0"));
-    const credit = parseFloat(prompt("أدخل قيمة القرض للمنتج (دج):", "0"));
-
-    if (!name) {
-      alert('الرجاء إدخال اسم المنتج');
-      return;
-    }
-    if (isNaN(salePrice) || salePrice < 0) {
-      alert('الرجاء إدخال سعر بيع صحيح');
-      return;
-    }
-    if (isNaN(purchasePrice) || purchasePrice < 0) {
-      alert('سعر الشراء غير صالح');
-      return;
-    }
-    if (isNaN(stockQuantity) || stockQuantity < 0) {
-      alert('كمية المخزون غير صالحة');
-      return;
-    }
-    if (isNaN(credit) || credit < 0) {
-      alert('قيمة القرض غير صالحة');
-      return;
-    }
-
-    let products = loadProducts();
-    products.push({
-      name,
-      salePrice: salePrice.toFixed(2),
-      purchasePrice: purchasePrice.toFixed(2),
-      stockQuantity,
-      credit: credit.toFixed(2)
-    });
-    saveProducts(products);
-    document.getElementById('product-name').value = '';
-    document.getElementById('product-price').value = '';
-    refreshProductsUI();
-    refreshStockUI();
-  }
-
-  // حذف منتج مع المبيعات المرتبطة
-  function deleteProduct(index) {
-    let products = loadProducts();
-    let sales = loadSales();
-    products.splice(index, 1);
-    sales = sales.filter(s => s.productIndex !== index);
-    sales.forEach(s => {
-      if (s.productIndex > index) s.productIndex--;
-    });
-    saveProducts(products);
-    saveSales(sales);
-    refreshProductsUI();
-    refreshSalesUI();
-    refreshStockUI();
-  }
-
-  // تسجيل بيع مع تحديث المخزون تلقائياً
-  function addSale() {
-    const productSelect = document.getElementById('sale-product');
-    const quantityInput = document.getElementById('sale-quantity');
-    let productIndex = parseInt(productSelect.value);
-    let quantity = parseInt(quantityInput.value);
-    if (isNaN(productIndex) || productIndex < 0) {
-      alert('الرجاء اختيار منتج صالح');
-      return;
-    }
-    if (isNaN(quantity) || quantity < 1) {
-      alert('الرجاء إدخال كمية صحيحة أكبر من الصفر');
-      return;
-    }
-    let products = loadProducts();
-    if ((products[productIndex].stockQuantity || 0) < quantity) {
-      alert('الكميات في المخزون غير كافية لإتمام البيع!');
-      return;
-    }
-
-    let sales = loadSales();
-    sales.push({ productIndex, quantity, date: new Date().toISOString() });
-    saveSales(sales);
-
-    // تحديث المخزون
-    products[productIndex].stockQuantity -= quantity;
-    saveProducts(products);
-
-    quantityInput.value = 1;
-    refreshSalesUI();
-    refreshProductsUI();
-    refreshStockUI();
-  }
-
-  // حذف مبيعة مع استرجاع المخزون
-  function deleteSale(index) {
-    let sales = loadSales();
-    let products = loadProducts();
-
-    if (index < 0 || index >= sales.length) return;
-    let sale = sales[index];
-    if (products[sale.productIndex]) {
-      products[sale.productIndex].stockQuantity = (products[sale.productIndex].stockQuantity || 0) + sale.quantity;
-    }
-
-    sales.splice(index, 1);
-    saveSales(sales);
-    saveProducts(products);
-    refreshSalesUI();
-    refreshProductsUI();
-    refreshStockUI();
-  }
-
-  // التقرير حسب الفترة كما سابق
-
-  function generateReport() {
-    const filter = document.getElementById('report-filter').value;
-    const sales = loadSales();
-    const products = loadProducts();
-    const tbody = document.querySelector('#report-table tbody');
-    tbody.innerHTML = '';
-    let startDate = new Date(0);
-    let now = new Date();
-    switch (filter) {
-      case 'اليوم':
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        break;
-      case 'الأسبوع':
-        let day = now.getDay(); // الأحد=0
-        let diffToMonday = (day + 6) % 7; 
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
-        break;
-      case 'الشهر':
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        break;
-      case 'كل_الأوقات':
-        startDate = new Date(0);
-        break;
-    }
-    let reportMap = new Map();
-    sales.forEach(sale => {
-      let saleDate = new Date(sale.date);
-      if (saleDate >= startDate && saleDate <= now) {
-        let prod = products[sale.productIndex];
-        if (!prod) return;
-        if (!reportMap.has(sale.productIndex)) {
-          reportMap.set(sale.productIndex, { quantity: 0, total: 0, name: prod.name });
-        }
-        let r = reportMap.get(sale.productIndex);
-        r.quantity += sale.quantity;
-        r.total += sale.quantity * prod.salePrice;
+    if(userLocation){
+      if(googleUserMarker){
+        googleUserMarker.setMap(null);
       }
-    });
-    let index = 1;
-    let totalQuantity = 0;
-    let totalMoney = 0;
-    reportMap.forEach((value) => {
-      const row = tbody.insertRow();
-      row.insertCell(0).innerText = index++;
-      row.insertCell(1).innerText = value.name;
-      row.insertCell(2).innerText = value.quantity;
-      row.insertCell(3).innerText = value.total.toLocaleString('ar-DZ', { minimumFractionDigits: 2 }) + ' دج';
-      totalQuantity += value.quantity;
-      totalMoney += value.total;
-    });
-    const summaryDiv = document.getElementById('report-summary');
-    summaryDiv.innerHTML = `<h3>ملخص التقرير:</h3>
-      <p>عدد المنتجات المباعة: <strong>${totalQuantity}</strong> وحدة</p>
-      <p>إجمالي الإيرادات: <strong>${totalMoney.toLocaleString('ar-DZ', { minimumFractionDigits: 2 })} دج</strong></p>`;
-  }
-
-  // تصدير وتأكيد ومحو السجلات والأوامر الأخرى كما في النسخة السابقة
-
-  // تصدير PDF
-  async function exportReportToPDF() {
-    generateReport();
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt' });
-    pdf.setFontSize(18);
-    pdf.text('تقرير المبيعات', 40, 40);
-
-    let summaryText = document.getElementById('report-summary').innerText;
-    pdf.setFontSize(12);
-    pdf.text(summaryText, 40, 70);
-
-    const table = document.getElementById('report-table');
-    const rows = table.querySelectorAll('tr');
-    let startY = 110;
-    const cellWidth = 150;
-    const cellHeight = 20;
-
-    let headers = [];
-    for (let th of table.querySelectorAll('thead th')) headers.push(th.innerText);
-    headers.forEach((h, i) => pdf.text(h, 40 + i * cellWidth, startY));
-    startY += cellHeight;
-
-    for (let i = 1; i < rows.length; i++) {
-      let cols = rows[i].querySelectorAll('td');
-      cols.forEach((td, j) => pdf.text(td.innerText, 40 + j * cellWidth, startY + (i - 1) * cellHeight));
+      googleUserMarker = new google.maps.Marker({
+        position: userLocation,
+        map: googleMap,
+        title: "موقعك"
+      });
+      googleMap.panTo(userLocation);
     }
-    pdf.save('تقرير_المبيعات.pdf');
   }
-
-  // XLS export
-  function exportReportToXLS() {
-    generateReport();
-    const table = document.getElementById('report-table');
-    let ws_data = [];
-    let headers = [];
-    for (let th of table.querySelectorAll('thead th')) headers.push(th.innerText);
-    ws_data.push(headers);
-    for (let tr of table.querySelectorAll('tbody tr')) {
-      let rowData = [];
-      for (let td of tr.querySelectorAll('td')) rowData.push(td.innerText);
-      ws_data.push(rowData);
+  // لي فليت ماب مجاني
+  function initLeafletMap(){
+    if(leafletMap) leafletMap.remove();
+    leafletMap = L.map('leafletMap').setView([restaurantLocation.lat, restaurantLocation.lng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 19,
+    }).addTo(leafletMap);
+    leafletRestaurantMarker = L.marker([restaurantLocation.lat, restaurantLocation.lng])
+      .addTo(leafletMap)
+      .bindPopup('موقع المطعم')
+      .openPopup();
+    if(userLocation){
+      if(leafletUserMarker) leafletMap.removeLayer(leafletUserMarker);
+      leafletUserMarker = L.marker([userLocation.lat, userLocation.lng])
+        .addTo(leafletMap)
+        .bindPopup('موقعك')
+        .openPopup();
+      leafletMap.panTo([userLocation.lat, userLocation.lng]);
     }
-    let wb = XLSX.utils.book_new();
-    let ws = XLSX.utils.aoa_to_sheet(ws_data);
-    XLSX.utils.book_append_sheet(wb, ws, "تقرير المبيعات");
-    XLSX.writeFile(wb, "تقرير_المبيعات.xlsx");
   }
-
-  // إرسال البريد الإلكتروني
-  function sendReportByEmail() {
-    generateReport();
-    const summaryDiv = document.getElementById('report-summary').innerText;
-    const table = document.getElementById('report-table');
-    let bodyText = summaryDiv + "\n\n";
-    const rows = table.querySelectorAll('tr');
-    rows.forEach(row => {
-      let rowText = [];
-      row.querySelectorAll('th,td').forEach(cell => rowText.push(cell.innerText));
-      bodyText += rowText.join('\t') + "\n";
-    });
-    let subject = encodeURIComponent("تقرير مبيعات");
-    let body = encodeURIComponent(bodyText);
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-  }
-
-  // محو كل البيانات
-  function clearAllData() {
-    if (confirm('هل أنت متأكد من حذف كل المنتجات والمبيعات؟ لا يمكن التراجع عن هذا الإجراء!')) {
-      localStorage.removeItem(STORAGE_PRODUCTS);
-      localStorage.removeItem(STORAGE_SALES);
-      refreshProductsUI();
-      refreshSalesUI();
-      refreshStockUI();
-      document.getElementById('report-summary').innerHTML = '';
-      document.querySelector('#report-table tbody').innerHTML = '';
+  // opentopomap بزيادة (خرائط تضاريس)
+  function initOpenTopoMap(){
+    if(leafletMap) leafletMap.remove();
+    leafletMap = L.map('leafletMap').setView([restaurantLocation.lat, restaurantLocation.lng], 14);
+    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      maxZoom: 17,
+      attribution: '© OpenTopoMap (CC-BY-SA)'
+    }).addTo(leafletMap);
+    leafletRestaurantMarker = L.marker([restaurantLocation.lat, restaurantLocation.lng])
+      .addTo(leafletMap)
+      .bindPopup('موقع المطعم')
+      .openPopup();
+    if(userLocation){
+      if(leafletUserMarker) leafletMap.removeLayer(leafletUserMarker);
+      leafletUserMarker = L.marker([userLocation.lat, userLocation.lng])
+        .addTo(leafletMap)
+        .bindPopup('موقعك')
+        .openPopup();
+      leafletMap.panTo([userLocation.lat, userLocation.lng]);
     }
   }
 
-  // البدء والتهيئة
-  function init() {
-    refreshProductsUI();
-    refreshSalesUI();
-    refreshStockUI();
-    generateReport();
-  }
-  window.onload = init;
+  // تبديل بين الخرائط
+  mapTypeSelector.addEventListener("change", () => {
+    const val = mapTypeSelector.value;
+    if(val === "google"){
+      googleMapDiv.style.display = "block";
+      leafletMapDiv.style.display = "none";
+      if(!googleMap) initGoogleMap();
+    } else {
+      googleMapDiv.style.display = "none";
+      leafletMapDiv.style.display = "block";
+      if(val === "osm") initLeafletMap();
+      else if(val === "opentopo") initOpenTopoMap();
+    }
+  });
 
-  // تحديث المخزون من واجهة مخزون (كمية وسعر شراء)
-  function updateStock(){
-    const stockProductSelect = document.getElementById('stock-product');
-    const quantityInput = document.getElementById('stock-quantity');
-    const purchasePriceInput = document.getElementById('stock-purchase-price');
-    let productIndex = parseInt(stockProductSelect.value);
-    let quantity = parseInt(quantityInput.value);
-    let purchasePrice = parseFloat(purchasePriceInput.value);
-    if (isNaN(productIndex) || productIndex<0) {
-      alert('اختر منتجاً صحيحاً لتحديث المخزون');
+  // تحديد الموقع الحالي
+  function getCurrentLocation(){
+    if(!navigator.geolocation){
+      alert("المتصفح لا يدعم تحديد الموقع");
       return;
     }
-    if (isNaN(quantity) || quantity<0){
-      alert('الكمية يجب أن تكون صفر أو أكثر');
-      return;
-    }
-    if (isNaN(purchasePrice) || purchasePrice < 0) {
-      alert('سعر الشراء غير صالح');
-      return;
-    }
-    let products = loadProducts();
-    products[productIndex].stockQuantity = quantity;
-    products[productIndex].purchasePrice = purchasePrice.toFixed(2);
-    saveProducts(products);
-    document.getElementById('stock-quantity').value = 0;
-    document.getElementById('stock-purchase-price').value = 0;
-    document.getElementById('stock-product').value = "";
-    refreshProductsUI();
-    refreshStockUI();
+    navigator.geolocation.getCurrentPosition(pos => {
+      userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      const val = mapTypeSelector.value;
+      if(val === "google"){
+        initGoogleMap();
+      } else if(val === "osm"){
+        initLeafletMap();
+      } else if(val === "opentopo"){
+        initOpenTopoMap();
+      }
+      alert("تم تحديث موقعك على الخريطة");
+    }, err => {
+      alert("فشل تحديد الموقع: " + err.message);
+    },{
+      enableHighAccuracy:true
+    });
   }
+
+  // --- تتبع الطلب ---
+  let trackingInterval = null;
+
+  // خريطة التتبع تظهر تقدم ومواقع في الوقت الحقيقي
+  function initTrackerMap(){
+    if(trackerMap) trackerMap.remove();
+    trackerMap = L.map('trackerMap').setView([restaurantLocation.lat, restaurantLocation.lng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 19,
+    }).addTo(trackerMap);
+    trackerRestaurantMarker = L.marker([restaurantLocation.lat, restaurantLocation.lng], {title:"موقع المطعم"}).addTo(trackerMap).bindPopup('موقع المطعم').openPopup();
+    trackerUserMarker = L.marker([restaurantLocation.lat + 0.003, restaurantLocation.lng + 0.003], {title:"موقع العميل"}).addTo(trackerMap).bindPopup('موقع العميل').openPopup();
+    trackerDriverMarker = L.marker([restaurantLocation.lat, restaurantLocation.lng], {title:"موقع السائق", icon: L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/684/684908.png', iconSize:[38,38],iconAnchor:[19,38]})}).addTo(trackerMap).bindPopup('موقع السائق').openPopup();
+  }
+  function updateTrackerPositions(driverPos){
+    trackerDriverMarker.setLatLng(driverPos);
+    trackerMap.panTo(driverPos);
+  }
+
+  // محاكاة تحرك السائق من المطعم إلى العميل تدريجياً
+  function simulateDriverMovement() {
+    if (!trackerMap) initTrackerMap();
+    let start = { lat: restaurantLocation.lat, lng: restaurantLocation.lng };
+    let end = userLocation || { lat: restaurantLocation.lat + 0.003, lng: restaurantLocation.lng + 0.003 };
+    let steps = 100;
+    let currentStep = 0;
+
+    const latStep = (end.lat - start.lat) / steps;
+    const lngStep = (end.lng - start.lng) / steps;
+
+    trackingInterval = setInterval(() => {
+      if (currentStep >= steps) {
+        clearInterval(trackingInterval);
+        updateOrderProgress("delivered");
+        return;
+      }
+      currentStep++;
+      let currentPos = { lat: start.lat + latStep * currentStep, lng: start.lng + lngStep * currentStep };
+      updateTrackerPositions(currentPos);
+      // Progress update depending on step
+      if(currentStep < 20) updateOrderProgress("prepared");
+      else if(currentStep < 50) updateOrderProgress("driverPickup");
+      else if(currentStep < 99) updateOrderProgress("onWay");
+      else updateOrderProgress("delivered");
+    }, 300);
+  }
+
+  // تقدم الطلب - واجهة
+  function updateOrderProgress(status){
+    orderStatusState = status;
+    Object.values(progressSteps).forEach(step => {
+      step.classList.remove("active");
+      step.removeAttribute("aria-current");
+    });
+    switch(status){
+      case "prepared":
+        progressSteps.prepared.classList.add("active");
+        progressSteps.prepared.setAttribute("aria-current", "step");
+        progressMessage.textContent = "تم تجهيز الطلب وجاري انتظاره للسائق";
+        break;
+      case "driverPickup":
+        progressSteps.prepared.classList.add("active");
+        progressSteps.driverPickup.classList.add("active");
+        progressSteps.driverPickup.setAttribute("aria-current", "step");
+        progressMessage.textContent = "السائق استلم الطلب وهو في طريقه";
+        break;
+      case "onWay":
+        progressSteps.prepared.classList.add("active");
+        progressSteps.driverPickup.classList.add("active");
+        progressSteps.onWay.classList.add("active");
+        progressSteps.onWay.setAttribute("aria-current", "step");
+        progressMessage.textContent = "السائق في الطريق إليك";
+        break;
+      case "delivered":
+        Object.values(progressSteps).forEach(step=>{
+          step.classList.add("active");
+        });
+        progressSteps.delivered.setAttribute("aria-current", "step");
+        progressMessage.textContent = "تم تسليم الطلب بنجاح. شكراً لاستخدامكم خدمتنا!";
+        break;
+      default:
+        progressMessage.textContent = "";
+    }
+  }
+
+  // أزرار وأحداث أخرى
+  document.getElementById("get-location").addEventListener("click", getCurrentLocation);
+  document.getElementById("proceed-to-checkout").addEventListener("click", () => {
+    document.querySelector(`.tab[data-tab="checkout"]`).click();
+  });
+  document.getElementById("order-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
+
+    if(cart.length === 0){
+      alert("السلة فارغة");
+      return;
+    }
+    if(!name || !phone || !address){
+      alert("يرجى ملء جميع الحقول.");
+      return;
+    }
+    // تحقق رقم الهاتف مع 213 اختياري ولكن يجب ثم 9 أرقام
+    if(!/^(213)?\d{9}$/.test(phone)){
+      alert("يرجى إدخال رقم هاتف صحيح مع أو بدون 213 وبطول 9 أرقام.");
+      return;
+    }
+
+    alert("تم استلام طلبك! سنتواصل معك قريباً.");
+    driverAvatar.src = driverInfo.avatar;
+    driverName.textContent = driverInfo.name;
+    driverPhone.textContent = driverInfo.phone;
+    driverInfoSection.style.display = "flex";
+
+    cart = [];
+    renderCart();
+    setupTabs();
+    document.querySelector(`.tab[data-tab="order-progress"]`).click();
+
+    // تهيئة خريطة التتبع بال Leaflet
+    initTrackerMap();
+
+    // بدء محاكاة تحرك السائق (بتحرك افتراضي)
+    simulateDriverMovement();
+
+    document.getElementById("order-form").reset();
+  });
+
+  document.getElementById("share-order").addEventListener("click", () => {
+    if(cart.length === 0){
+      alert("السلة فارغة، لا يوجد شيء للمشاركة");
+      return;
+    }
+    const text = cart.map(it => `${it.name} ×${it.quantity} = ${it.price * it.quantity} دج`).join("\n");
+    const url = `https://wa.me/?text=${encodeURIComponent("طلب من الدليفري:\n"+text)}`;
+    window.open(url, "_blank");
+  });
+  document.getElementById("call-order").addEventListener("click", () => {
+    window.location.href = "tel:+213775210534";
+  });
+  document.getElementById("email-order").addEventListener("click", () => {
+    if(cart.length === 0){
+      alert("السلة فارغة، لا يوجد شيء لإرساله");
+      return;
+    }
+    const subject = encodeURIComponent("طلب من الدليفري");
+    const body = encodeURIComponent(cart.map(it => `${it.name} ×${it.quantity} = ${it.price * it.quantity} دج`).join("\n"));
+    const mailto = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = mailto;
+  });
+  document.getElementById("call-driver-btn").addEventListener("click", () => {
+    window.location.href = `tel:${driverInfo.phone}`;
+  });
+  document.getElementById("messenger-btn").addEventListener("click", () => {
+    window.open("https://m.me/", "_blank");
+  });
+
+  addProductBtn.addEventListener("click", () => {
+    addProductModal.classList.add("active");
+    addProductForm.reset();
+    productImagePreview.style.display = 'none';
+    productImagePreview.src = '';
+  });
+  cancelAddProductBtn.addEventListener("click", () => {
+    addProductModal.classList.remove("active");
+  });
+  productImageInput.addEventListener("change", () => {
+    const file = productImageInput.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = e => {
+        productImagePreview.src = e.target.result;
+        productImagePreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      productImagePreview.src = '';
+      productImagePreview.style.display = 'none';
+    }
+  });
+  addProductForm.addEventListener("submit", (e)=>{
+    e.preventDefault();
+    const name = document.getElementById("product-name").value.trim();
+    const price = parseFloat(document.getElementById("product-price").value);
+    if(!name){
+      alert("يرجى إدخال اسم المنتج.");
+      return;
+    }
+    if(!price || price <= 0){
+      alert("يرجى إدخال ثمن المنتج صحيح أكبر من صفر.");
+      return;
+    }
+    if(!productImageInput.files.length){
+      alert("يرجى اختيار صورة المنتج.");
+      return;
+    }
+    const file = productImageInput.files[0];
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const newProduct = {
+        id: Date.now(),
+        name: name,
+        price: price,
+        description: "",
+        image: e.target.result
+      };
+      mainProducts.push(newProduct);
+      renderMenu();
+      alert(`تمت إضافة المنتج "${name}" بنجاح!`);
+      addProductModal.classList.remove("active");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function tryInitMaps() {
+    const val = mapTypeSelector.value;
+    if(val === "google" && !googleMap) {
+      initGoogleMap();
+    }
+    if(val === "osm" && !leafletMap) {
+      initLeafletMap();
+    }
+    if(val === "opentopo" && !leafletMap) {
+      initOpenTopoMap();
+    }
+  }
+
+  renderMenu();
+  renderDesserts();
+  renderCart();
+  setupTabs();
+
+  // تهيئة افتراضية
+  mapTypeSelector.value = "google";
+  googleMapDiv.style.display = "block";
+  leafletMapDiv.style.display = "none";
+
+  tryInitMaps();
+</script>
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkCirSO0JmLcD57ucNwbV06U376yt0CQ8&callback=initGoogleMap">
 </script>
 </body>
 </html>
-
